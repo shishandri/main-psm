@@ -8,7 +8,7 @@ const passport = require('passport');
 var flash = require('express-flash');
 const rtsIndex = require('./routes/index.routes');
 var session = require('express-session');
- 
+var async = require('async');
 require('dotenv').config()
 var app = express();
 

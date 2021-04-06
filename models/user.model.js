@@ -1,29 +1,109 @@
 const mongoose = require('mongoose');
-// const bcrypt = require('bcryptjs');
-// const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+ const jwt = require('jsonwebtoken');
 
 var userSchema = new mongoose.Schema({
+    userid:{
+        type: String, 
+    },
     firstname: {
         type: String,
-        required: 'firstname can\'t be empty'
+       
     },
-    lastname: {
+    lastname: 
+    {
         type: String,
-        required: 'lastname can\'t be empty'
+    },
+    username: {
+        type: String,
     },
     email: {
         type: String,
-        required: 'Email can\'t be empty',
         unique: true
+    },
+    empid:{
+        type: String,
     },
     password: {
         type: String,
         required: 'Password can\'t be empty',
         minlength: [4, 'Password must be atleast 4 character long']
     },
+    personalemail: {
+        type: String,
+      
+    },
+    birthday:{
+        type: Date, 
+    },
+
+    currentaddress: {
+        type: String,
+      
+    },
+    city:
+    {
+        type: String,
+       
+    },
+    country:
+    {
+        type: String,
+    },
+    postalcode:
+    {
+        type: String,
+    },
+    permanentaddress: {
+        type: String,
+     
+    },
+    mobileno: {
+        type: String,
+       
+    },
+    alternativeno: {
+        type: String,
+      
+    },
+    usertype:
+    {
+         type: String,
+
+    },
+   tlassociated:
+    {
+         type: String,
+
+    },
+    nomineename:
+    {
+        type: String,
+     
+    },
+    nomineeno:
+    {
+        type: String,
+        
+    },
+    gender:
+    {
+        type: Boolean,
+        
+    },
     updateddate: {
         type: Date,
-        required: 'lastname can\'t be empty'
+       
+    },
+    uploadedimage: {
+        type: String,
+    },
+    // documentupload: {
+    //     type: String,
+    // },
+    bio:
+    {
+        type: String,
     },
     created: { 
         type: Date, 
@@ -37,7 +117,22 @@ userSchema.path('email').validate((val) => {
     emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return emailRegex.test(val);
 }, 'Invalid e-mail.');
-
+userSchema.path('personalemail').validate((val) => {
+    emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return emailRegex.test(val);
+}, 'Invalid e-mail.');
+userSchema.path('mobileno').validate((val) => {
+    emailRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    return emailRegex.test(val);
+},'please Enter a valid mobile number(10 digits)');
+userSchema.path('alternativeno').validate((val) => {
+    emailRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    return emailRegex.test(val);
+},'please Enter a valid mobile number(10 digits)');
+userSchema.path('nomineeno').validate((val) => {
+    emailRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    return emailRegex.test(val);
+},'please Enter a valid mobile number(10 digits)');
 // Events
 userSchema.pre('save', function (next) {
     bcrypt.genSalt(10, (err, salt) => {
