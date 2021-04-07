@@ -38,6 +38,7 @@ router.post('/register',ctrlUser.register);
 router.post('/authenticate', ctrlUser.authenticate);
 router.post('/userprofile',jwtHelper.verifyJwtToken,ctrlUser.userprofile);
 router.get('/getprofile', jwtHelper.verifyJwtToken,ctrlUser.getprofile);
+router.post('/req-reset-password', ctrlUser.forgot);
 // Admin
 router.get('/home', ctrlAdmin.adminHome);
 // router.get('/delete',);

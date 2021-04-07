@@ -15,7 +15,9 @@ var app = express();
 
 // middleware
 app.use('/uploads',express.static('./uploads'));
-app.use(session({ secret: 'session secret key' }));
+
+app.use(session({ secret: 'session secret key' ,resave: true,
+saveUninitialized: true }));
 app.use(flash());
 app.use(bodyParser.json({limit:'50mb'}));
 app.use(bodyParser.json());

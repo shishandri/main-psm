@@ -4,6 +4,9 @@ const {v4 : uuidv4} = require('uuid')
 const User = mongoose.model('User');
 const passport= require('passport');
 const _ = require('lodash');
+var nodemailer = require('nodemailer');
+var crypto = require('crypto');
+var async = require('async');
 module.exports.register = (req, res, next) => 
 {
                  var user = new User();
@@ -12,9 +15,9 @@ module.exports.register = (req, res, next) =>
                  user.userid = userid;
                  user.firstname = req.body.firstname;
                  user.lastname = req.body.lastname;
-                 user.username = req.body.username;
                  user.email = req.body.email;
                  user.password = req.body.password;
+               
         user.save((err, doc) => 
         {
             if (!err)
@@ -44,16 +47,73 @@ module.exports.register = (req, res, next) =>
                 else return res.status(404).json(info);
             })(req, res);
         }
-         
+        module.exports.forgot=(req, res, next)=> 
+        { 
+            var user = new User();
+          user.email=req.body.email;
+          console.log(user.email)
+            async.waterfall([
+                function(done) 
+                {
+                    crypto.randomBytes(20, function(err, buf) {
+                        var token = buf.toString('hex');
+                        done(err, token);
+                    });
+                },
+                function(token, done) 
+                {   
+                   
+                    User.findOne({ email:user.email }, function(err, user) {
+                        if(!user) {
+                            req.flash('error', 'No acccount with that email address exists.');
+                            return res.redirect('/forgot');
+                        }
+              
+                        // user.save(function(err,doc) 
+                        // {
+                        //     if (!err)
+                            
+                        //     res.send(doc);
+                        //     done(err, token, user);
+                        //     // console.log(user);
+                        // });
+                    });
+                },
+                function(token, user, done) {
+                    var transporter  = nodemailer.createTransport(  {
+                        service: 'gmail',
+                           port: 465,
+                          secure: true,
+                            auth: {
+                                user: "testusr5055@gmail.com",  
+                                pass: 'james_bon007'
+                                   }
+            });
+                    var mailOptions = {
+                        to: 'shishandrikaul9@gmail.com',
+                        text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+                        'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+                        'http://162.241.70.148:4200/new-password/' +token+ '\n\n' +
+                        'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+                        }
+                        transporter .sendMail(mailOptions, function(err) 
+                    {
+                        req.flash('info', 'An e-mail has been sent to ' + user.email + ' with instructions as to how to change your password')
+                        done(err, 'done');
+                    });
+                }
+                ], function(err,doc) {
+                    if(err) return next(err);
+                    
+                    res.redirect('/forgot');
+                });
+               
+         };
         module.exports.userprofile = (req, res, next) =>
         {
-            
+           
                 var user = new User();
                 User.findOneAndUpdate({_id: req._id},{$set:{
-                firstname :req.body.firstname,
-                lastname :req.body.lastname,
-                username:req.body.username,
-                password:  req.body.password,
                 empid : req.body.empid,
                 personalemail : req.body.personalemail,
                 birthday : req.body.birthday,
@@ -72,7 +132,7 @@ module.exports.register = (req, res, next) =>
                 updateddate : req.body.updateddate,
                 bio : req.body.bio,
           
-        }}, {upsert: true}, (err, doc) => {
+        }}, {runValidators: true,setDefaultsOnInsert: true,upsert: true,  context: 'query'}, (err, doc) => {
             if (!err) 
             {
                 res.send(doc);

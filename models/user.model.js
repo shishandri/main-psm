@@ -14,9 +14,6 @@ var userSchema = new mongoose.Schema({
     {
         type: String,
     },
-    username: {
-        type: String,
-    },
     email: {
         type: String,
         unique: true
@@ -26,8 +23,11 @@ var userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: 'Password can\'t be empty',
+        // required: 'Password can\'t be empty',
         minlength: [4, 'Password must be atleast 4 character long']
+    },
+    status:{
+        type:Boolean
     },
     personalemail: {
         type: String,
@@ -88,7 +88,7 @@ var userSchema = new mongoose.Schema({
     },
     gender:
     {
-        type: Boolean,
+        type: String,
         
     },
     updateddate: {
@@ -133,10 +133,22 @@ userSchema.path('nomineeno').validate((val) => {
     emailRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
     return emailRegex.test(val);
 },'please Enter a valid mobile number(10 digits)');
+userSchema.pre('findOneAndUpdate', function (next) 
+{
+    bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(this.password, salt, (err, hash) => 
+        {
+            this.password = hash;
+            this.saltSecret = salt;
+            next();
+        });
+    });
+})
 // Events
 userSchema.pre('save', function (next) {
     bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(this.password, salt, (err, hash) => {
+        bcrypt.hash(this.password, salt, (err, hash) => 
+        {
             this.password = hash;
             this.saltSecret = salt;
             next();
