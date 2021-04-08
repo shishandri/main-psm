@@ -7,6 +7,40 @@ const _ = require('lodash');
 var nodemailer = require('nodemailer');
 var crypto = require('crypto');
 var async = require('async');
+const express = require('express');
+const router = express.Router();
+// const crypto=require('crypto')
+
+// module.exports.register = async function(req, res, next)
+// {  
+//     console.log('hello');
+//     var user = new User({
+//         firstname : req.body.firstname,
+//         lastname : req.body.lastname,
+//         email : req.body.email,
+//         emailToken : crypto.randomBytes(64).toString('hex'),
+//         isVerified:false,
+//         // password = req.body.password,
+//     });
+//     user.save(user,req.body.password,async function(err,user)
+//     {
+//         if(err)
+//         {
+//             req.flash("error",err.message);
+//             return res.redirect("register");
+//         }
+//         const msg={
+//             from :'shishandrikaul9@gmail.com',
+//             to:user.email,
+//             subject:'adjsajd',
+//             text:`hllo.
+//             http://${req.headers.host}/verify-email?token=${user.emailToken}`,
+// html:`http://${req.headers.host}/verify-email?token=${user.emailToken}`,
+//         }
+       
+//     })
+// }
+
 module.exports.register = (req, res, next) => 
 {
                  var user = new User();
@@ -20,6 +54,7 @@ module.exports.register = (req, res, next) =>
                
         user.save((err, doc) => 
         {
+       
             if (!err)
             {
                 res.send(doc);
@@ -34,6 +69,7 @@ module.exports.register = (req, res, next) =>
             }
         });
     }
+
     module.exports.authenticate = (req, res, next) => 
     {
           
@@ -50,8 +86,8 @@ module.exports.register = (req, res, next) =>
         module.exports.forgot=(req, res, next)=> 
         { 
             var user = new User();
-          user.email=req.body.email;
-          console.log(user.email)
+            user.email=req.body.email;
+            console.log(user.email)
             async.waterfall([
                 function(done) 
                 {
@@ -63,40 +99,38 @@ module.exports.register = (req, res, next) =>
                 function(token, done) 
                 {   
                    
-                    User.findOne({ email:user.email }, function(err, user) {
+                    User.findOne({email:user.email}, function(err, user) {
                         if(!user) {
                             req.flash('error', 'No acccount with that email address exists.');
                             return res.redirect('/forgot');
                         }
-              
-                        // user.save(function(err,doc) 
-                        // {
-                        //     if (!err)
+                        user.save(function(err,doc) 
+                        {
+                            if (!err)
                             
-                        //     res.send(doc);
-                        //     done(err, token, user);
-                        //     // console.log(user);
-                        // });
+                            res.send(doc);
+                            done(err, token, user);
+                            // console.log(user);
+                        });
                     });
                 },
-                function(token, user, done) {
+                function(token, user, done) 
+                {
                     var transporter  = nodemailer.createTransport(  {
                         service: 'gmail',
-                           port: 465,
-                          secure: true,
                             auth: {
                                 user: "testusr5055@gmail.com",  
-                                pass: 'james_bon007'
+                                pass: 'james_bon007',
+                             
                                    }
             });
-                    var mailOptions = {
-                        to: 'shishandrikaul9@gmail.com',
-                        text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
-                        'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-                        'http://162.241.70.148:4200/new-password/' +token+ '\n\n' +
-                        'If you did not request this, please ignore this email and your password will remain unchanged.\n'
-                        }
-                        transporter .sendMail(mailOptions, function(err) 
+                    var mailOptions = 
+                    {
+                        to: user.email,
+                        text: 'hi'
+                       }
+                       console.log(mailOptions)
+                        transporter .sendMail(mailOptions,function(err) 
                     {
                         req.flash('info', 'An e-mail has been sent to ' + user.email + ' with instructions as to how to change your password')
                         done(err, 'done');

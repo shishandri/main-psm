@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+
+
 const ctrlUser = require('../controllers/user.controller');
 const ctrlAdmin = require('../controllers/admin.controller');
 const jwtHelper = require('../config/jwtHelper');
@@ -39,6 +41,7 @@ router.post('/authenticate', ctrlUser.authenticate);
 router.post('/userprofile',jwtHelper.verifyJwtToken,ctrlUser.userprofile);
 router.get('/getprofile', jwtHelper.verifyJwtToken,ctrlUser.getprofile);
 router.post('/req-reset-password', ctrlUser.forgot);
+// router.post('/req-reset-password', ctrlUser.forgot);
 // Admin
 router.get('/home', ctrlAdmin.adminHome);
 // router.get('/delete',);

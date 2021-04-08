@@ -18,6 +18,10 @@ var userSchema = new mongoose.Schema({
         type: String,
         unique: true
     },
+    emailToken:
+    {
+        String
+    },
     empid:{
         type: String,
     },
@@ -26,7 +30,7 @@ var userSchema = new mongoose.Schema({
         // required: 'Password can\'t be empty',
         minlength: [4, 'Password must be atleast 4 character long']
     },
-    status:{
+    isVerified:{
         type:Boolean
     },
     personalemail: {
