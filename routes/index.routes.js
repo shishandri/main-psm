@@ -38,9 +38,10 @@ var upload = multer({storage: storage, limits : {fileSize : 1000000}});
 
 router.post('/register',ctrlUser.register);
 router.post('/authenticate', ctrlUser.authenticate);
-router.post('/userprofile',jwtHelper.verifyJwtToken,ctrlUser.userprofile);
+router.post('/userprofile',upload.single('uploadedimage'),jwtHelper.verifyJwtToken,ctrlUser.userprofile);
 router.get('/getprofile', jwtHelper.verifyJwtToken,ctrlUser.getprofile);
-router.post('/req-reset-password', ctrlUser.forgot);
+router.get('/confirmation/:email/:token', ctrlUser.confirmEmail);
+router.get('/getprofile', jwtHelper.verifyJwtToken,ctrlUser.getprofile);
 // router.post('/req-reset-password', ctrlUser.forgot);
 // Admin
 router.get('/home', ctrlAdmin.adminHome);

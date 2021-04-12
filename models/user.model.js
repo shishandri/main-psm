@@ -6,6 +6,8 @@ var userSchema = new mongoose.Schema({
     userid:{
         type: String, 
     },
+    token: { type: String},
+    expireAt: { type: Date, default: Date.now, index: { expires: 86400000 } },
     firstname: {
         type: String,
        
@@ -30,9 +32,7 @@ var userSchema = new mongoose.Schema({
         // required: 'Password can\'t be empty',
         minlength: [4, 'Password must be atleast 4 character long']
     },
-    isVerified:{
-        type:Boolean
-    },
+   
     personalemail: {
         type: String,
       
@@ -45,6 +45,7 @@ var userSchema = new mongoose.Schema({
         type: String,
       
     },
+    isVerified: { type: Boolean, default: false },
     city:
     {
         type: String,
